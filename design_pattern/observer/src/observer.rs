@@ -15,6 +15,7 @@ pub mod generics {
         /// 購読しているSubjectの更新時に実行される
         /// 任意の型Tのデータを通知できる
         fn notify(&self, data: &T);
+        fn name(&self) -> &str;
     }
 }
 
@@ -34,5 +35,6 @@ pub mod trait_object {
     }
     pub trait Observer<T> {
         fn notify(&self, data: &T);
+        fn name(&self) -> &str;
     }
 }

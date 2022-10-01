@@ -14,6 +14,7 @@ struct News<'a, String> {
 impl<'a> Subject<'a, String> for News<'a, String> {
     fn subscribe(&mut self, observer: &'a O<String>) {
         self.observers.push(observer);
+        println!("{} subscribed!", observer.name());
     }
     fn unsubscribe(&mut self, observer: &'a O<String>) {
         // sameクレートのsame関数はここで使う
@@ -22,12 +23,14 @@ impl<'a> Subject<'a, String> for News<'a, String> {
         // positionのpredicateに渡されるxの型は`&&Box<dyn Observer<String>`になるらしい
         if let Some(index) = self.observers.iter().position(|x| x.same(&observer)) {
             self.observers.remove(index);
+            println!("{} unsubscribed!", observer.name());
         }
     }
 }
 
 impl<'a> News<'a, String> {
     fn post(&self, article: String) {
+        println!("posted new article!");
         for observer in &self.observers {
             observer.notify(&article);
         }
@@ -42,6 +45,9 @@ struct Listener {
 impl Observer<String> for Listener {
     fn notify(&self, data: &String) {
         println!("{} received subject notify. data=\"{}\"", self.name, data);
+    }
+    fn name(&self) -> &str {
+        self.name.as_str()
     }
 }
 
@@ -67,5 +73,5 @@ pub fn trait_object_pattern() {
     // アリスが購読を解除
     news.unsubscribe(&alice);
     // ニュース記事の更新(ボブのみに通知される)
-    news.post("tomollow's weather will raining".to_string());
+    news.post("tomorrow's weather will raining".to_string());
 }

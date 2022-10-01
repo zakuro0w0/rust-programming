@@ -13,6 +13,7 @@ impl<'a, O: Observer<String> + PartialEq> Subject<'a, String, O> for News<'a, O>
     fn subscribe(&mut self, observer: &'a O) {
         // 購読者をリストに追加する
         self.observers.push(observer);
+        println!("{} subscribed!", observer.name());
     }
     fn unsubscribe(&mut self, observer: &'a O) {
         // position()で条件に一致する要素のindexをSome(usize)として取得する
@@ -20,6 +21,7 @@ impl<'a, O: Observer<String> + PartialEq> Subject<'a, String, O> for News<'a, O>
         if let Some(index) = self.observers.iter().position(|x| *x == observer) {
             // 条件に一致する購読者をリストから削除する
             self.observers.remove(index);
+            println!("{} unsubscribed!", observer.name());
         }
     }
 }
@@ -27,10 +29,11 @@ impl<'a, O: Observer<String> + PartialEq> Subject<'a, String, O> for News<'a, O>
 /// ニュース構造体のメソッド実装
 impl<'a, O: Observer<String>> News<'a, O> {
     /// ニュース記事を投稿する
-    fn post(&self, article: &String) {
+    fn post(&self, article: String) {
+        println!("posted new article!");
         // 購読者リストの全員に通知を行う
         for observer in &self.observers {
-            observer.notify(article);
+            observer.notify(&article);
         }
     }
 }
@@ -47,6 +50,9 @@ impl Observer<String> for Listener {
     fn notify(&self, data: &String) {
         // 更新の通知が来たら名前を出力する
         println!("{} received subject notify. data=\"{}\"", self.name, data);
+    }
+    fn name(&self) -> &str {
+        self.name.as_str()
     }
 }
 
@@ -68,9 +74,9 @@ pub fn generics_pattern_sample() {
     news.subscribe(&alice);
     news.subscribe(&bob);
     // ニュース記事の更新(購読者全員に通知される)
-    news.post(&"today's weather will sunny".to_string());
+    news.post("today's weather will sunny".to_string());
     // アリスが購読を解除
     news.unsubscribe(&alice);
     // ニュース記事の更新(ボブのみに通知される)
-    news.post(&"tomollow's weather will raining".to_string());
+    news.post("tomorrow's weather will raining".to_string());
 }
