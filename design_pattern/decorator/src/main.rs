@@ -3,5 +3,5 @@ use decorator::*;
 
 fn main() {
     println!("wellcome, coffee shop!");
-    beverage_decorator_sample();
+    drinkmenu_decorator_sample();
 }
