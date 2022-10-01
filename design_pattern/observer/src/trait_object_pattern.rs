@@ -6,16 +6,16 @@ use same::Same;
 struct News<'a, String> {
     /// トレイトオブジェクトを格納したBoxへの参照を配列として持つ  
     /// 構造体のフィールドに参照を持つために生存期間パラメータ'aを指定する必要がある
-    observers: Vec<&'a Box<dyn Observer<String>>>,
+    observers: Vec<&'a O<String>>,
 }
 
 /// トレイトのパラメータに生存期間がある場合、implに続けて<>の中で生存期間パラメータを宣言する必要がある  
 /// impl, トレイト, トレイトを実装する型 の3つについて生存期間パラメータを明記するので少し面倒に感じる  
 impl<'a> Subject<'a, String> for News<'a, String> {
-    fn subscribe(&mut self, observer: &'a Box<dyn Observer<String>>) {
+    fn subscribe(&mut self, observer: &'a O<String>) {
         self.observers.push(observer);
     }
-    fn unsubscribe(&mut self, observer: &'a Box<dyn Observer<String>>) {
+    fn unsubscribe(&mut self, observer: &'a O<String>) {
         // sameクレートのsame関数はここで使う
         // Observerリストから引数で指定されたObserverの位置を特定するため、
         // リストの各要素と引数observerを比較する目的でsame()を使う
@@ -48,11 +48,11 @@ impl Observer<String> for Listener {
 pub fn trait_object_pattern() {
     println!("=================== trait object pattern ======================");
     // 購読者: アリス
-    let alice: Box<dyn Observer<String>> = Box::new(Listener {
+    let alice: O<String> = Box::new(Listener {
         name: "Alice".to_string(),
     });
     // 購読者: ボブ
-    let bob: Box<dyn Observer<String>> = Box::new(Listener {
+    let bob: O<String> = Box::new(Listener {
         name: "Bob".to_string(),
     });
     // ニュース記事

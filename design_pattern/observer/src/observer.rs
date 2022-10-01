@@ -20,14 +20,17 @@ pub mod generics {
 
 /// トレイトオブジェクト構文で多相を実現したパターン
 pub mod trait_object {
+
+    /// トレイトオブジェクトを運搬するBoxの型エイリアス
+    pub type O<T> = Box<dyn Observer<T>>;
     pub trait Subject<'a, T> {
         /// トレイトオブジェクトは基本的にBoxで囲んで運ぶ必要がある  
         /// Boxで囲んでいても参照でない形で渡すと所有権を呼び出し元から奪ってしまう  
         /// Observerはsubscribeとunsubscribeで複数回使うので所有権を奪っては都合が悪い  
         /// このためトレイトオブジェクトもBoxの参照を渡す必要があり、  
         /// この参照への配列をSubject実装型で持つので生存期間パラメータ'aも必要になる  
-        fn subscribe(&mut self, observer: &'a Box<dyn Observer<T>>);
-        fn unsubscribe(&mut self, observer: &'a Box<dyn Observer<T>>);
+        fn subscribe(&mut self, observer: &'a O<T>);
+        fn unsubscribe(&mut self, observer: &'a O<T>);
     }
     pub trait Observer<T> {
         fn notify(&self, data: &T);
