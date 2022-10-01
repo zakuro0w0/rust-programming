@@ -1,15 +1,26 @@
 use crate::observer::trait_object::*;
+/// トレイトオブジェクト同士の等価性をチェックするために追加したクレート
+/// https://docs.rs/same/latest/same/trait.Same.html
+use same::Same;
 
 struct News<'a, String> {
+    /// トレイトオブジェクトを格納したBoxへの参照を配列として持つ  
+    /// 構造体のフィールドに参照を持つために生存期間パラメータ'aを指定する必要がある
     observers: Vec<&'a Box<dyn Observer<String>>>,
 }
 
+/// トレイトのパラメータに生存期間がある場合、implに続けて<>の中で生存期間パラメータを宣言する必要がある  
+/// impl, トレイト, トレイトを実装する型 の3つについて生存期間パラメータを明記するので少し面倒に感じる  
 impl<'a> Subject<'a, String> for News<'a, String> {
     fn subscribe(&mut self, observer: &'a Box<dyn Observer<String>>) {
         self.observers.push(observer);
     }
     fn unsubscribe(&mut self, observer: &'a Box<dyn Observer<String>>) {
-        if let Some(index) = self.observers.iter().position(|x| *x == observer) {
+        // sameクレートのsame関数はここで使う
+        // Observerリストから引数で指定されたObserverの位置を特定するため、
+        // リストの各要素と引数observerを比較する目的でsame()を使う
+        // positionのpredicateに渡されるxの型は`&&Box<dyn Observer<String>`になるらしい
+        if let Some(index) = self.observers.iter().position(|x| x.same(&observer)) {
             self.observers.remove(index);
         }
     }

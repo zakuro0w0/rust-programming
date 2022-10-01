@@ -5,3 +5,12 @@ version = 3
 [[package]]
 name = "observer"
 version = "0.1.0"
+dependencies = [
+ "same",
+]
+
+[[package]]
+name = "same"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fab2b8d7c10ef5a4fbcb955f082e2ce02bc9411329e1b6188ef6285476dfd4af"

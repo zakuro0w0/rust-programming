@@ -1,5 +1,8 @@
+/// ジェネリクス構文で多相を実現したパターン
 pub mod generics {
-    /// 生存期間aのObserverトレイト実装型をOとする
+    /// 生存期間aのObserverトレイト実装型をOとする  
+    /// subscribe(), unsubscribe()はdyn Traitのトレイトオブジェクトではなく、  
+    /// 任意の型Tを扱うObserverトレイトを実装した生存期間aの任意の実体型をobserver引数として受け取る
     pub trait Subject<'a, T, O: Observer<T>> {
         /// Subjectの更新を購読する
         fn subscribe(&mut self, observer: &'a O);
@@ -15,8 +18,14 @@ pub mod generics {
     }
 }
 
+/// トレイトオブジェクト構文で多相を実現したパターン
 pub mod trait_object {
     pub trait Subject<'a, T> {
+        /// トレイトオブジェクトは基本的にBoxで囲んで運ぶ必要がある  
+        /// Boxで囲んでいても参照でない形で渡すと所有権を呼び出し元から奪ってしまう  
+        /// Observerはsubscribeとunsubscribeで複数回使うので所有権を奪っては都合が悪い  
+        /// このためトレイトオブジェクトもBoxの参照を渡す必要があり、  
+        /// この参照への配列をSubject実装型で持つので生存期間パラメータ'aも必要になる  
         fn subscribe(&mut self, observer: &'a Box<dyn Observer<T>>);
         fn unsubscribe(&mut self, observer: &'a Box<dyn Observer<T>>);
     }
