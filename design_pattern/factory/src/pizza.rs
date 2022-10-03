@@ -1,70 +1,71 @@
 /// ピザを作る工程
-trait Pizza {
+pub trait Pizza {
+    /// ピザのメニュー名
+    fn name(&self) -> String;
+    /// 一連のトッピング
+    fn toppings(&self) -> Vec<String>;
     /// 下ごしらえ
-    fn prepare(&self) {}
-    /// 生地を焼く
-    fn bake(&self) {}
-    /// 切り分ける
-    fn cut(&self) {}
-    /// 箱に詰める
-    fn boxing(&self) {}
-}
-
-/// ピザメニュー
-pub enum PizzaMenu {
-    /// チーズピザ
-    CheesePizza,
-    /// ペパロニピザ
-    PepperoniPizza,
-    /// マルゲリータピザ
-    MargheritaPizza,
-    /// 野菜ピザ
-    VegiePizza,
-    /// ギリシャピザ
-    GreekPizza,
-}
-
-// ピザメニュー毎に構造体とPizzaトレイトの実装を宣言する
-struct CheesePizza {}
-struct PepperoniPizza {}
-struct MargheritaPizza {}
-struct VegiePizza {}
-struct GreekPizza {}
-
-impl Pizza for CheesePizza {}
-impl Pizza for PepperoniPizza {}
-impl Pizza for MargheritaPizza {}
-impl Pizza for VegiePizza {}
-impl Pizza for GreekPizza {}
-
-/// Pizzaのトレイトオブジェクトのエイリアス
-type P = Box<dyn Pizza>;
-
-/// ピザファクトリ  
-/// ピザのインスタンス化コードをこの構造体に閉じ込める
-struct PizzaFactory;
-
-impl PizzaFactory {
-    /// menuで指定された種類のピザを新規に作って返す
-    /// 返すピザはBox<dyn Pizza>、つまりトレイトオブジェクトのBoxとなる
-    fn create_pizza(menu: PizzaMenu) -> P {
-        match menu {
-            PizzaMenu::CheesePizza => Box::new(CheesePizza {}),
-            PizzaMenu::PepperoniPizza => Box::new(PepperoniPizza {}),
-            PizzaMenu::MargheritaPizza => Box::new(MargheritaPizza {}),
-            PizzaMenu::VegiePizza => Box::new(VegiePizza {}),
-            PizzaMenu::GreekPizza => Box::new(GreekPizza {}),
+    fn prepare(&self) {
+        println!("{}を下準備", self.name());
+        println!("生地をこねる");
+        println!("ソースを追加");
+        println!("トッピングを追加");
+        for topping in self.toppings() {
+            println!("  - {}", topping);
         }
+    }
+    /// 生地を焼く
+    fn bake(&self) {
+        println!("180℃で25分間焼く");
+    }
+    /// 切り分ける
+    fn cut(&self) {
+        println!("ピザを扇形にカットする");
+    }
+    /// 箱に詰める
+    fn boxing(&self) {
+        println!("PizzaStoreの箱にピザを入れる");
     }
 }
 
-/// ピザメニューを1つ指定してピザを注文する
-pub fn order_pizza(menu: PizzaMenu) {
-    // どのピザを作るかを決める
-    // 製法はPizzaFactoryに移譲したのでピザの種類を指定するだけで良い
-    let pizza: P = PizzaFactory::create_pizza(menu);
-    pizza.prepare();
-    pizza.bake();
-    pizza.cut();
-    pizza.boxing();
+pub mod newyork {
+    use crate::pizza::Pizza;
+
+    /// ニューヨークのとあるピザ店のメニュー
+    pub enum NewYorkStylePizzaMenu {
+        NYStyleCheesePizza,
+        NYStyleMargheritaPizza,
+        NYStylePepperoniPizza,
+    }
+
+    pub struct NYStleCheesePizza;
+    pub struct NYStyleMargheritaPizza;
+    pub struct NYStylePepperoniPizza;
+
+    impl Pizza for NYStleCheesePizza {
+        fn name(&self) -> String {
+            "NYStyleCheesePizza".to_string()
+        }
+        fn toppings(&self) -> Vec<String> {
+            vec!["NY cheese".to_string(), "NY cheese2".to_string()]
+        }
+    }
+
+    impl Pizza for NYStyleMargheritaPizza {
+        fn name(&self) -> String {
+            "NYStyleMargheritaPizza".to_string()
+        }
+        fn toppings(&self) -> Vec<String> {
+            vec!["NY tomato".to_string(), "NY basil".to_string()]
+        }
+    }
+
+    impl Pizza for NYStylePepperoniPizza {
+        fn name(&self) -> String {
+            "NYStylePepperoniPizza".to_string()
+        }
+        fn toppings(&self) -> Vec<String> {
+            vec!["NY pepperoni".to_string(), "NY pepperoni2".to_string()]
+        }
+    }
 }
