@@ -1,3 +1,5 @@
+mod example;
+
 struct Canvas;
 impl Canvas {
     fn write_at(&self, x: i32, y: i32, c: char) {}
@@ -96,4 +98,5 @@ fn sub_trait() {
 
 fn main() {
     println!("Hello, world!");
+    crate::example::trait_object_example();
 }
